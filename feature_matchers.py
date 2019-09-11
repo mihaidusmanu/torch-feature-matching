@@ -44,7 +44,7 @@ def ratio_mutual_nn_matcher(descriptors1, descriptors2, ratio=0.8):
     return matches.t(), nns_dist[mask, 0]
 
 
-def similarity_matcher(descriptors1, descriptors2, threshold=0.7):
+def similarity_matcher(descriptors1, descriptors2, threshold=0.9):
     # Similarity threshold matcher for L2 normalized descriptors.
     device = descriptors1.device
     sim = descriptors1 @ descriptors2.t()
@@ -52,6 +52,6 @@ def similarity_matcher(descriptors1, descriptors2, threshold=0.7):
     nn_dist = torch.sqrt(2 - 2 * nn_sim)
     nn21 = torch.max(sim, dim=0)[1]
     ids1 = torch.arange(0, sim.shape[0], device=device)
-    mask = torch.min(ids1 == nn21[nn12], match_sim >= threshold)
+    mask = (nn_sim >= threshold)
     matches = torch.stack([ids1[mask], nn12[mask]])
     return matches.t(), nn_dist[mask]
